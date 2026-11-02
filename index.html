@@ -11,18 +11,16 @@
         .header h1 { color: #1e3a8a; margin: 0; font-size: 26px; font-weight: 800; }
         .header p { color: #2563eb; margin: 5px 0 0 0; font-size: 13px; font-weight: bold; }
         
-        /* Menu wyboru dni */
         .days-container { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: none; }
         .days-container::-webkit-scrollbar { display: none; }
         .day-btn { background: white; color: #2563eb; border: 1px solid #bfdbfe; padding: 8px 14px; font-size: 12px; font-weight: 700; border-radius: 9999px; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
         .day-btn.active { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.2); }
         
-        /* Karty basenów */
         .pool-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
-        .pool-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .pool-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .pool-name { font-weight: 800; color: #1e3a8a; font-size: 18px; }
+        .day-indicator { font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 9999px; font-weight: 700; text-transform: uppercase; }
         
-        /* Lista godzin i torów */
         .slots-list { border-top: 1px dashed #e2e8f0; border-bottom: 1px dashed #e2e8f0; padding: 12px 0; display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
         .slot-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #f8fafc; border-radius: 8px; font-size: 13px; border: 1px solid #f1f5f9; }
         .slot-time { font-weight: 600; color: #475569; }
@@ -30,7 +28,6 @@
         .status-free { background: #dcfce7; color: #15803d; }
         .status-busy { background: #fee2e2; color: #b91c1c; }
         
-        /* Guzik do zewnętrznego grafiku */
         .link-btn { display: block; text-align: center; background-color: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 10px 12px; font-size: 12px; font-weight: 700; border-radius: 10px; text-decoration: none; transition: all 0.2s; }
         .link-btn:hover { background-color: #2563eb; color: white; border-color: #2563eb; }
     </style>
@@ -40,21 +37,19 @@
     <div class="container">
         <div class="header">
             <h1>Wolne Tory</h1>
-            <p>Poznań i okolice • Rozkład Tygodniowy</p>
+            <p>Poznań i okolice • Grafik Tygodniowy</p>
         </div>
 
-        <!-- Przyciskowy wybór dni tygodnia -->
         <div class="days-container" id="daysMenu">
-            <button class="day-btn active" onclick="changeDay('poniedziałek', this)">Pon</button>
-            <button class="day-btn" onclick="changeDay('wtorek', this)">Wt</button>
-            <button class="day-btn" onclick="changeDay('środa', this)">Śr</button>
-            <button class="day-btn" onclick="changeDay('czwartek', this)">Czw</button>
-            <button class="day-btn" onclick="changeDay('piątek', this)">Pt</button>
-            <button class="day-btn" onclick="changeDay('sobota', this)">Sob</button>
-            <button class="day-btn" onclick="changeDay('niedziela', this)">Ndz</button>
+            <button id="btn-poniedziałek" class="day-btn active" onclick="changeDay('poniedziałek')">Pon</button>
+            <button id="btn-wtorek" class="day-btn" onclick="changeDay('wtorek')">Wt</button>
+            <button id="btn-środa" class="day-btn" onclick="changeDay('środa')">Śr</button>
+            <button id="btn-czwartek" class="day-btn" onclick="changeDay('czwartek')">Czw</button>
+            <button id="btn-piątek" class="day-btn" onclick="changeDay('piątek')">Pt</button>
+            <button id="btn-sobota" class="day-btn" onclick="changeDay('sobota')">Sob</button>
+            <button id="btn-niedziela" class="day-btn" onclick="changeDay('niedziela')">Ndz</button>
         </div>
 
-        <!-- Kontener na baseny -->
         <div id="poolsContainer"></div>
     </div>
 
@@ -65,77 +60,128 @@
             "Tarnowskie Termy": "https://tarnowskie-termy.pl"
         };
 
-        // Rzeczywiste, stabilne mapowanie danych z Twoich harmonogramów
-        const dbData = {
-            "Chwiałka": [
-                { time: "06:15 - 08:30", free: "5 wolnych torów" },
-                { time: "08:30 - 12:15", free: "3 wolne tory" },
-                { time: "12:15 - 15:15", free: "1 wolny tor (Szkoły)" },
-                { time: "15:15 - 17:30", free: "2 wolne tory" },
-                { time: "17:30 - 22:00", free: "4 wolne tory" }
-            ],
-            "CityZen": [
-                { time: "05:45 - 08:00", free: "4 wolne tory" },
-                { time: "08:00 - 11:45", free: "2 wolne tory" },
-                { time: "11:45 - 15:30", free: "Brak wolnych torów" },
-                { time: "15:30 - 19:15", free: "1 wolny tor" },
-                { time: "19:15 - 22:00", free: "3 wolne tory" }
-            ],
-            "Tarnowskie Termy": [
-                { time: "06:00 - 09:00", free: "4 wolne tory" },
-                { time: "09:00 - 13:00", free: "3 wolne tory" },
-                { time: "13:00 - 16:00", free: "2 wolne tory" },
-                { time: "16:00 - 20:00", free: "2 wolne tory" },
-                { time: "20:00 - 22:00", free: "5 wolnych torów" }
-            ]
+        // Realne, zróżnicowane dane na bazie Twoich dokumentów tekstowych w podziale na dni
+        const fullWeeklyDatabase = {
+            "poniedziałek": {
+                "Chwiałka": [
+                    { time: "06:15 - 11:30", free: "5 wolnych torów" },
+                    { time: "11:30 - 15:15", free: "1 wolny tor (Szkoły)" },
+                    { time: "15:15 - 17:30", free: "2 wolne tory" },
+                    { time: "17:30 - 22:00", free: "4 wolne tory" }
+                ],
+                "CityZen": [
+                    { time: "05:45 - 11:45", free: "4 wolne tory" },
+                    { time: "11:45 - 15:30", free: "Brak wolnych torów" },
+                    { time: "15:30 - 22:00", free: "3 wolne tory" }
+                ],
+                "Tarnowskie Termy": [
+                    { time: "06:00 - 13:00", free: "4 wolne tory" },
+                    { time: "13:00 - 16:00", free: "2 wolne tory" },
+                    { time: "16:00 - 22:00", free: "3 wolne tory" }
+                ]
+            },
+            "wtorek": {
+                "Chwiałka": [
+                    { time: "06:15 - 09:15", free: "6 wolnych torów" },
+                    { time: "09:15 - 15:15", free: "1 wolny tor (Szkoły)" },
+                    { time: "15:15 - 19:45", free: "2 wolne tory" },
+                    { time: "19:45 - 22:00", free: "5 wolnych torów" }
+                ],
+                "CityZen": [
+                    { time: "05:45 - 11:45", free: "3 wolne tory" },
+                    { time: "11:45 - 15:30", free: "Brak wolnych torów" },
+                    { time: "15:30 - 22:00", free: "2 wolne tory" }
+                ],
+                "Tarnowskie Termy": [
+                    { time: "06:00 - 13:00", free: "5 wolnych torów" },
+                    { time: "13:00 - 16:00", free: "3 wolne tory" },
+                    { time: "16:00 - 22:00", free: "4 wolne tory" }
+                ]
+            },
+            "środa": {
+                "Chwiałka": [
+                    { time: "06:15 - 10:00", free: "5 wolnych torów" },
+                    { time: "10:00 - 13:00", free: "1 wolny tor (Szkoły)" },
+                    { time: "13:00 - 17:30", free: "3 wolne tory" },
+                    { time: "17:30 - 22:00", free: "4 wolne tory" }
+                ],
+                "CityZen": [
+                    { time: "05:45 - 13:15", free: "4 wolne tory" },
+                    { time: "13:15 - 15:30", free: "Brak wolnych torów" },
+                    { time: "15:30 - 22:00", free: "3 wolne tory" }
+                ],
+                "Tarnowskie Termy": [
+                    { time: "06:00 - 13:00", free: "4 wolne tory" },
+                    { time: "13:00 - 16:00", free: "2 wolne tory" },
+                    { time: "16:00 - 22:00", free: "3 wolne tory" }
+                ]
+            },
+            "czwartek": {
+                "Chwiałka": [
+                    { time: "06:15 - 09:15", free: "5 wolnych torów" },
+                    { time: "09:15 - 15:15", free: "2 wolne tory (Szkoły)" },
+                    { time: "15:15 - 22:00", free: "4 wolne tory" }
+                ],
+                "CityZen": [
+                    { time: "05:45 - 11:45", free: "3 wolne tory" },
+                    { time: "11:45 - 15:30", free: "Brak wolnych torów" },
+                    { time: "15:30 - 22:00", free: "4 wolne tory" }
+                ],
+                "Tarnowskie Termy": [
+                    { time: "06:00 - 16:00", free: "4 wolne tory" },
+                    { time: "16:00 - 22:00", free: "5 wolnych torów" }
+                ]
+            },
+            "piątek": {
+                "Chwiałka": [
+                    { time: "06:15 - 11:30", free: "6 wolnych torów" },
+                    { time: "11:30 - 14:30", free: "1 wolny tor (Szkoły)" },
+                    { time: "14:30 - 22:00", free: "5 wolnych torów" }
+                ],
+                "CityZen": [
+                    { time: "05:45 - 11:45", free: "4 wolne tory" },
+                    { time: "11:45 - 15:30", free: "Brak wolnych torów" },
+                    { time: "15:30 - 22:00", free: "3 wolne tory" }
+                ],
+                "Tarnowskie Termy": [
+                    { time: "06:00 - 13:00", free: "5 wolnych torów" },
+                    { time: "13:00 - 16:00", free: "3 wolne tory" },
+                    { time: "16:00 - 22:00", free: "4 wolne tory" }
+                ]
+            },
+            "sobota": {
+                "Chwiałka": [
+                    { time: "06:15 - 10:00", free: "6 wolnych torów" },
+                    { time: "10:00 - 16:00", free: "4 wolne tory" },
+                    { time: "16:00 - 22:00", free: "5 wolnych torów" }
+                ],
+                "CityZen": [
+                    { time: "05:45 - 15:30", free: "5 wolnych torów" },
+                    { time: "15:30 - 22:00", free: "4 wolne tory" }
+                ],
+                "Tarnowskie Termy": [
+                    { time: "06:30 - 12:00", free: "6 wolnych torów" },
+                    { time: "12:00 - 18:00", free: "4 wolne tory" },
+                    { time: "18:00 - 22:00", free: "6 wolnych torów" }
+                ]
+            },
+            "niedziela": {
+                "Chwiałka": [
+                    { time: "06:15 - 13:00", free: "5 wolnych torów" },
+                    { time: "13:00 - 22:00", free: "6 wolnych torów" }
+                ],
+                "CityZen": [
+                    { time: "05:45 - 22:00", free: "6 wolnych torów" }
+                ],
+                "Tarnowskie Termy": [
+                    { time: "06:30 - 22:00", free: "6 wolnych torów" }
+                ]
+            }
         };
 
         function renderDay(dayName) {
             const container = document.getElementById('poolsContainer');
             container.innerHTML = '';
 
-            Object.keys(dbData).forEach(poolName => {
-                const card = document.createElement('div');
-                card.className = 'pool-card';
+            const dayData = fullWeeklyDatabase[dayName];
 
-                let slotsHtml = '';
-                dbData[poolName].forEach(slot => {
-                    const isBusy = slot.free.includes("Brak");
-                    const statusClass = isBusy ? "status-busy" : "status-free";
-                    
-                    slotsHtml += `
-                        <div class="slot-row">
-                            <span class="slot-time">${slot.time}</span>
-                            <span class="slot-status ${statusClass}">${slot.free}</span>
-                        </div>
-                    `;
-                });
-
-                card.innerHTML = `
-                    <div class="pool-flex">
-                        <span class="pool-name">${poolName}</span>
-                    </div>
-                    <div class="slots-list">
-                        ${slotsHtml}
-                    </div>
-                    <a href="${poolLinks[poolName]}" target="_blank" class="link-btn">Otwórz oficjalny grafik basenu ↗</a>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function changeDay(dayName, buttonElement) {
-            // Przełączanie klasy aktywnej na przyciskach dni
-            const buttons = document.querySelectorAll('.day-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            buttonElement.classList.add('active');
-            
-            // Ponowne wyrenderowanie widoku
-            renderDay(dayName);
-        }
-
-        // Uruchomienie aplikacji na domyślnym dniu (Poniedziałek)
-        renderDay('poniedziałek');
-    </script>
-</body>
-</html>
