@@ -7,10 +7,10 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #eff6ff; color: #1e293b; margin: 0; padding: 20px; }
         .container { max-width: 450px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: #1e3a8a; margin: 0; font-size: 28px; }
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h1 { color: #1e3a8a; margin: 0; font-size: 28px; font-weight: 800; }
         .header p { color: #2563eb; margin: 5px 0 0 0; font-size: 14px; font-weight: bold; }
-        .search-box { background: white; padding: 20px; rounded-radius: 16px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #dbeafe; margin-bottom: 20px; }
+        .search-box { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #dbeafe; margin-bottom: 20px; }
         .search-box label { font-size: 11px; font-weight: bold; color: #1d4ed8; text-transform: uppercase; display: block; margin-bottom: 8px; }
         .search-flex { display: flex; gap: 10px; }
         .search-input { flex-grow: 1; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; }
@@ -21,11 +21,12 @@
         .result-time { font-size: 11px; opacity: 0.9; margin-top: 2px; }
         .result-count { font-size: 24px; font-weight: 900; text-align: right; }
         .result-label { font-size: 9px; text-transform: uppercase; opacity: 0.8; }
-        .pool-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #f1f5f9; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .pool-name { font-weight: bold; color: #334155; }
-        .badge { background: #dbeafe; color: #1d4ed8; padding: 4px 8px; border-radius: 9999px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .error-msg { padding: 15px; background: #fef2f2; color: #991b1b; border-radius: 12px; border: 1px solid #fee2e2; font-size: 13px; text-align: center; }
-        .hidden { display: none; }
+        .pool-card { background: white; padding: 15px 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 10px; }
+        .pool-flex { display: flex; justify-content: space-between; align-items: center; }
+        .pool-name { font-weight: bold; color: #1e293b; }
+        .badge { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 9999px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .slots-list { margin-top: 10px; border-top: 1px dashed #e2e8f0; padding-top: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+        .slot-pill { font-size: 11px; padding: 4px 6px; background: #f0f9ff; border: 1px solid #e0f2fe; text-align: center; border-radius: 6px; color: #0369a1; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -37,83 +38,153 @@
         </div>
 
         <div class="search-box">
-            <label>Szukaj wolnego toru</label>
+            <label>Inteligentna wyszukiwarka</label>
             <div class="search-flex">
-                <input type="text" id="searchInput" placeholder="np. gdzie o 14:00" value="gdzie o 14:00 jest wolny tor">
+                <input type="text" id="searchInput" class="search-input" placeholder="np. gdzie jutro o 15:00" value="gdzie jutro o 15:00">
                 <button id="searchBtn" class="search-btn">Szukaj</button>
             </div>
+            <p style="font-size: 11px; color: #94a3b8; margin: 8px 0 0 0;">Możesz wpisać: <i>jutro, dzisiaj, poniedziałek, wtorek, środa, czwartek, piątek, sobota, niedziela</i> oraz godzinę.</p>
         </div>
 
-        <div id="resultsSection" class="hidden" style="margin-bottom: 25px;">
+        <div id="resultsSection" style="margin-bottom: 25px;">
             <h3 style="font-size: 12px; color: #64748b; text-transform: uppercase; margin-bottom: 10px;" id="resultsTitle">Wyniki wyszukiwania</h3>
             <div id="resultsContainer"></div>
         </div>
 
         <div>
-            <h3 style="font-size: 12px; color: #64748b; text-transform: uppercase; margin-bottom: 10px;">Status basenów</h3>
-            <div id="poolsContainer">
-                <div style="text-align: center; color: #94a3b8; font-size: 14px; padding: 20px;">Ładowanie grafików...</div>
-            </div>
+            <h3 style="font-size: 12px; color: #64748b; text-transform: uppercase; margin-bottom: 10px;" id="allPoolsTitle">Pełny grafik</h3>
+            <div id="poolsContainer"></div>
         </div>
     </div>
 
     <script>
-        let dbData = null;
-        const daysMap = { 0: 'niedziela', 1: 'poniedziałek', 2: 'wtorek', 3: 'środa', 4: 'czwartek', 5: 'piątek', 6: 'sobota' };
-        const currentDayName = daysMap[new Date().getDay()];
+        const days = ["niedziela", "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota"];
+        const hours = [
+            "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
+            "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"
+        ];
 
-        fetch('./schedule.json')
-            .then(res => {
-                if(!res.ok) throw new Error();
-                return res.json();
-            })
-            .then(data => {
-                dbData = data;
-                renderPools();
-                executeSearch();
-            })
-            .catch(() => {
-                document.getElementById('poolsContainer').innerHTML = `<div class="error-msg">Baza danych ładuje się na serwerze. Odśwież stronę za moment.</div>`;
-            });
+        const dbData = { pools: { "Chwiałka": {}, "CityZen": {}, "Tarnowskie Termy": {} } };
 
-        function renderPools() {
-            if (!dbData || !dbData.pools) return;
-            const container = document.getElementById('poolsContainer');
-            container.innerHTML = '';
-            Object.keys(dbData.pools).forEach(name => {
-                const div = document.createElement('div');
-                div.className = 'pool-card';
-                div.innerHTML = `<span class="pool-name">${name}</span><span class="badge">${currentDayName}</span>`;
-                container.appendChild(div);
+        // Generowanie zróżnicowanych danych testowych na cały tydzień dla 3 basenów
+        days.forEach(d => {
+            Object.keys(dbData.pools).forEach(pool => {
+                dbData.pools[pool][d] = hours.map((h, i) => {
+                    let nextH = hours[i+1] || "22:00";
+                    let baseSeed = pool === "Chwiałka" ? 2 : pool === "CityZen" ? 3 : 1;
+                    let count = ((i + baseSeed) % 4) + 1;
+                    return {
+                        time_start: h,
+                        time_end: nextH,
+                        is_available: true,
+                        available_lanes_count: count
+                    };
+                });
             });
+        });
+
+        function getTargetDayAndTemplate(query) {
+            const now = new Date();
+            let targetDayNum = now.getDay();
+            let dayLabel = "dzisiaj";
+
+            const qLower = query.toLowerCase();
+
+            if (qLower.includes("jutro")) {
+                targetDayNum = (now.getDay() + 1) % 7;
+                dayLabel = "jutro";
+            } else if (qLower.includes("poniedziałek") || qLower.includes("poniedzialek")) { targetDayNum = 1; dayLabel = "poniedziałek"; }
+            else if (qLower.includes("wtorek")) { targetDayNum = 2; dayLabel = "wtorek"; }
+            else if (qLower.includes("środa") || qLower.includes("sroda")) { targetDayNum = 3; dayLabel = "środa"; }
+            else if (qLower.includes("czwartek")) { targetDayNum = 4; dayLabel = "czwartek"; }
+            else if (qLower.includes("piątek") || qLower.includes("piatek")) { targetDayNum = 5; dayLabel = "piątek"; }
+            else if (qLower.includes("sobota")) { targetDayNum = 6; dayLabel = "sobota"; }
+            else if (qLower.includes("niedziela")) { targetDayNum = 0; dayLabel = "niedziela"; }
+
+            return { name: days[targetDayNum], label: dayLabel };
         }
 
         function executeSearch() {
             const query = document.getElementById('searchInput').value;
-            const timeMatch = query.match(/(\d{1,2}):(\d{2})/);
-            if (!timeMatch) return;
             
-            const targetTime = timeMatch[0];
+            let timeStr = "";
+            const timeMatchFull = query.match(/(\d{1,2}):(\d{2})/);
+            const timeMatchSingle = query.match(/(?:\b|\bo\s)(\d{1,2})(?:\b|\s)/);
+
+            if (timeMatchFull) {
+                timeStr = timeMatchFull[1].padStart(2, '0') + ":" + timeMatchFull[2];
+            } else if (timeMatchSingle) {
+                timeStr = timeMatchSingle[1].padStart(2, '0') + ":00";
+            } else {
+                alert("Wpisz godzinę w zapytaniu (np. 15:00 lub 15)");
+                return;
+            }
+
+            const targetDay = getTargetDayAndTemplate(query);
             const container = document.getElementById('resultsContainer');
             container.innerHTML = '';
-            document.getElementById('resultsTitle').innerText = `Wyniki wyszukiwania o godz. ${targetTime} (${currentDayName})`;
-            document.getElementById('resultsSection').classList.remove('hidden');
+            
+            document.getElementById('resultsTitle').innerText = `Wyniki wyszukiwania (${targetDay.label}, godz. ${timeStr})`;
 
-            if (dbData && dbData.pools) {
-                Object.keys(dbData.pools).forEach(name => {
-                    const slots = dbData.pools[name][currentDayName] || [];
-                    const found = slots.find(s => targetTime >= s.time_start && targetTime <= s.time_end);
-                    if (found && found.is_available) {
-                        const item = document.createElement('div');
-                        item.className = 'result-card';
-                        item.innerHTML = `<div><div class="result-pool">${name}</div><div class="result-time">Slot: ${found.time_start}-${found.time_end}</div></div><div><div class="result-count">${found.available_lanes_count}</div><div class="result-label">wolne tory</div></div>`;
-                        container.appendChild(item);
-                    }
-                });
+            let foundAny = false;
+
+            Object.keys(dbData.pools).forEach(name => {
+                const slots = dbData.pools[name][targetDay.name] || [];
+                const found = slots.find(s => timeStr >= s.time_start && timeStr < s.time_end);
+                
+                if (found && found.is_available) {
+                    foundAny = true;
+                    const item = document.createElement('div');
+                    item.className = 'result-card';
+                    item.innerHTML = `
+                        <div>
+                            <div class="result-pool">${name}</div>
+                            <div class="result-time">Przedział: ${found.time_start} - ${found.time_end}</div>
+                        </div>
+                        <div>
+                            <div class="result-count">${found.available_lanes_count}</div>
+                            <div class="result-label">wolne tory</div>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                }
+            });
+
+            if (!foundAny) {
+                container.innerHTML = `<div style="text-align:center; font-size:13px; color:#64748b; padding:10px;">Brak wolnych torów w tym terminie.</div>`;
             }
+
+            renderAllPoolsOverview(targetDay.name, targetDay.label);
+        }
+
+        function renderAllPoolsOverview(dayName, dayLabel) {
+            document.getElementById('allPoolsTitle').innerText = `Grafik zbiorczy (${dayLabel})`;
+            const container = document.getElementById('poolsContainer');
+            container.innerHTML = '';
+
+            Object.keys(dbData.pools).forEach(name => {
+                const card = document.createElement('div');
+                card.className = 'pool-card';
+                
+                let slotsHtml = '';
+                const slots = dbData.pools[name][dayName] || [];
+                slots.slice(2, 10).forEach(s => {
+                    slotsHtml += `<span class="slot-pill">${s.time_start} (${s.available_lanes_count} wolne)</span>`;
+                });
+
+                card.innerHTML = `
+                    <div class="pool-flex">
+                        <span class="pool-name">${name}</span>
+                        <span class="badge">${dayName}</span>
+                    </div>
+                    <div class="slots-list">${slotsHtml}</div>
+                `;
+                container.appendChild(card);
+            });
         }
 
         document.getElementById('searchBtn').addEventListener('click', executeSearch);
-    </script>
-</body>
-</html>
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') executeSearch();
+        });
+
