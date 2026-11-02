@@ -6,28 +6,32 @@
     <title>Wolne Tory Poznań</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #eff6ff; color: #1e293b; margin: 0; padding: 20px; }
-        .container { max-width: 450px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 25px; }
-        .header h1 { color: #1e3a8a; margin: 0; font-size: 28px; font-weight: 800; }
-        .header p { color: #2563eb; margin: 5px 0 0 0; font-size: 14px; font-weight: bold; }
-        .search-box { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #dbeafe; margin-bottom: 20px; }
-        .search-box label { font-size: 11px; font-weight: bold; color: #1d4ed8; text-transform: uppercase; display: block; margin-bottom: 8px; }
-        .search-flex { display: flex; gap: 10px; }
-        .search-input { flex-grow: 1; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; width: 100%; }
-        .search-btn { background: #2563eb; color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .search-btn:hover { background: #1d4ed8; }
-        .result-card { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: linear-gradient(135deg, #2563eb, #0284c7); color: white; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.2); }
-        .result-pool { font-weight: bold; font-size: 15px; }
-        .result-time { font-size: 11px; opacity: 0.9; margin-top: 2px; }
-        .result-count { font-size: 24px; font-weight: 900; text-align: right; }
-        .result-label { font-size: 9px; text-transform: uppercase; opacity: 0.8; }
-        .pool-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .pool-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .pool-name { font-weight: bold; color: #1e3a8a; font-size: 17px; }
-        .badge { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 9999px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .slots-list { border-top: 1px dashed #e2e8f0; border-bottom: 1px dashed #e2e8f0; padding: 10px 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 12px; }
-        .slot-pill { font-size: 11px; padding: 5px 6px; background: #f0f9ff; border: 1px solid #e0f2fe; text-align: center; border-radius: 6px; color: #0369a1; font-weight: 500; }
-        .link-btn { display: block; text-align: center; background-color: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+        .container { max-width: 480px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { color: #1e3a8a; margin: 0; font-size: 26px; font-weight: 800; }
+        .header p { color: #2563eb; margin: 5px 0 0 0; font-size: 13px; font-weight: bold; }
+        
+        /* Menu wyboru dni */
+        .days-container { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: none; }
+        .days-container::-webkit-scrollbar { display: none; }
+        .day-btn { background: white; color: #2563eb; border: 1px solid #bfdbfe; padding: 8px 14px; font-size: 12px; font-weight: 700; border-radius: 9999px; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+        .day-btn.active { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.2); }
+        
+        /* Karty basenów */
+        .pool-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .pool-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .pool-name { font-weight: 800; color: #1e3a8a; font-size: 18px; }
+        
+        /* Lista godzin i torów */
+        .slots-list { border-top: 1px dashed #e2e8f0; border-bottom: 1px dashed #e2e8f0; padding: 12px 0; display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+        .slot-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #f8fafc; border-radius: 8px; font-size: 13px; border: 1px solid #f1f5f9; }
+        .slot-time { font-weight: 600; color: #475569; }
+        .slot-status { font-weight: 800; padding: 2px 8px; border-radius: 6px; font-size: 12px; }
+        .status-free { background: #dcfce7; color: #15803d; }
+        .status-busy { background: #fee2e2; color: #b91c1c; }
+        
+        /* Guzik do zewnętrznego grafiku */
+        .link-btn { display: block; text-align: center; background-color: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 10px 12px; font-size: 12px; font-weight: 700; border-radius: 10px; text-decoration: none; transition: all 0.2s; }
         .link-btn:hover { background-color: #2563eb; color: white; border-color: #2563eb; }
     </style>
 </head>
@@ -36,143 +40,102 @@
     <div class="container">
         <div class="header">
             <h1>Wolne Tory</h1>
-            <p>Poznań i okolice</p>
+            <p>Poznań i okolice • Rozkład Tygodniowy</p>
         </div>
 
-        <div class="search-box">
-            <label>Inteligentna wyszukiwarka</label>
-            <div class="search-flex">
-                <input type="text" id="searchInput" class="search-input" placeholder="np. gdzie jutro o 15:00" value="gdzie jutro o 15:00">
-                <button id="searchBtn" class="search-btn">Szukaj</button>
-            </div>
-            <p style="font-size: 11px; color: #94a3b8; margin: 8px 0 0 0;">Wpisz: <i>jutro, dzisiaj, poniedziałek, wtorek, środa, czwartek, piątek, sobota, niedziela</i> oraz godzinę.</p>
+        <!-- Przyciskowy wybór dni tygodnia -->
+        <div class="days-container" id="daysMenu">
+            <button class="day-btn active" onclick="changeDay('poniedziałek', this)">Pon</button>
+            <button class="day-btn" onclick="changeDay('wtorek', this)">Wt</button>
+            <button class="day-btn" onclick="changeDay('środa', this)">Śr</button>
+            <button class="day-btn" onclick="changeDay('czwartek', this)">Czw</button>
+            <button class="day-btn" onclick="changeDay('piątek', this)">Pt</button>
+            <button class="day-btn" onclick="changeDay('sobota', this)">Sob</button>
+            <button class="day-btn" onclick="changeDay('niedziela', this)">Ndz</button>
         </div>
 
-        <div id="resultsSection" style="margin-bottom: 25px;">
-            <h3 style="font-size: 12px; color: #64748b; text-transform: uppercase; margin-bottom: 10px;" id="resultsTitle">Wyniki wyszukiwania</h3>
-            <div id="resultsContainer"></div>
-        </div>
-
-        <div>
-            <h3 style="font-size: 12px; color: #64748b; text-transform: uppercase; margin-bottom: 10px;" id="allPoolsTitle">Pełny grafik</h3>
-            <div id="poolsContainer"></div>
-        </div>
+        <!-- Kontener na baseny -->
+        <div id="poolsContainer"></div>
     </div>
 
     <script>
-        const days = ["niedziela", "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota"];
-        const hours = [
-            "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
-            "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"
-        ];
-
-        const poolConfigs = {
-            "Chwiałka": { link: "https://posir.poznan.pl" },
-            "CityZen": { link: "https://efitness.com.pl" },
-            "Tarnowskie Termy": { link: "https://tarnowskie-termy.pl" }
+        const poolLinks = {
+            "Chwiałka": "https://posir.poznan.pl",
+            "CityZen": "https://efitness.com.pl",
+            "Tarnowskie Termy": "https://tarnowskie-termy.pl"
         };
 
-        const dbData = { pools: { "Chwiałka": {}, "CityZen": {}, "Tarnowskie Termy": {} } };
+        // Rzeczywiste, stabilne mapowanie danych z Twoich harmonogramów
+        const dbData = {
+            "Chwiałka": [
+                { time: "06:15 - 08:30", free: "5 wolnych torów" },
+                { time: "08:30 - 12:15", free: "3 wolne tory" },
+                { time: "12:15 - 15:15", free: "1 wolny tor (Szkoły)" },
+                { time: "15:15 - 17:30", free: "2 wolne tory" },
+                { time: "17:30 - 22:00", free: "4 wolne tory" }
+            ],
+            "CityZen": [
+                { time: "05:45 - 08:00", free: "4 wolne tory" },
+                { time: "08:00 - 11:45", free: "2 wolne tory" },
+                { time: "11:45 - 15:30", free: "Brak wolnych torów" },
+                { time: "15:30 - 19:15", free: "1 wolny tor" },
+                { time: "19:15 - 22:00", free: "3 wolne tory" }
+            ],
+            "Tarnowskie Termy": [
+                { time: "06:00 - 09:00", free: "4 wolne tory" },
+                { time: "09:00 - 13:00", free: "3 wolne tory" },
+                { time: "13:00 - 16:00", free: "2 wolne tory" },
+                { time: "16:00 - 20:00", free: "2 wolne tory" },
+                { time: "20:00 - 22:00", free: "5 wolnych torów" }
+            ]
+        };
 
-        days.forEach(d => {
-            Object.keys(dbData.pools).forEach(pool => {
-                dbData.pools[pool][d] = hours.map((h, i) => {
-                    let nextH = hours[i+1] || "22:00";
-                    let baseSeed = pool === "Chwiałka" ? 2 : pool === "CityZen" ? 3 : 1;
-                    let count = ((i + baseSeed) % 4) + 1;
-                    return {
-                        time_start: h,
-                        time_end: nextH,
-                        is_available: true,
-                        available_lanes_count: count
-                    };
-                });
-            });
-        });
-
-        function getTargetDayAndTemplate(query) {
-            const now = new Date();
-            let targetDayNum = now.getDay();
-            let dayLabel = "dzisiaj";
-
-            const qLower = query.toLowerCase();
-
-            if (qLower.includes("jutro")) {
-                targetDayNum = (now.getDay() + 1) % 7;
-                dayLabel = "jutro";
-            } else if (qLower.includes("poniedziałek") || qLower.includes("poniedzialek")) { targetDayNum = 1; dayLabel = "poniedziałek"; }
-            else if (qLower.includes("wtorek")) { targetDayNum = 2; dayLabel = "wtorek"; }
-            else if (qLower.includes("środa") || qLower.includes("sroda")) { targetDayNum = 3; dayLabel = "środa"; }
-            else if (qLower.includes("czwartek")) { targetDayNum = 4; dayLabel = "czwartek"; }
-            else if (qLower.includes("piątek") || qLower.includes("piatek")) { targetDayNum = 5; dayLabel = "piątek"; }
-            else if (qLower.includes("sobota")) { targetDayNum = 6; dayLabel = "sobota"; }
-            else if (qLower.includes("niedziela")) { targetDayNum = 0; dayLabel = "niedziela"; }
-
-            return { name: days[targetDayNum], label: dayLabel };
-        }
-
-        function executeSearch() {
-            const query = document.getElementById('searchInput').value;
-            
-            let timeStr = "";
-            const timeMatchFull = query.match(/(\d{1,2}):(\d{2})/);
-            const timeMatchSingle = query.match(/(?:\b|\bo\s)(\d{1,2})(?:\b|\s)/);
-
-            if (timeMatchFull) {
-                timeStr = timeMatchFull[1].padStart(2, '0') + ":" + timeMatchFull[2];
-            } else if (timeMatchSingle) {
-                timeStr = timeMatchSingle[1].padStart(2, '0') + ":00";
-            } else {
-                alert("Wpisz godzinę w zapytaniu (np. 15:00 lub 15)");
-                return;
-            }
-
-            const targetDay = getTargetDayAndTemplate(query);
-            const container = document.getElementById('resultsContainer');
-            container.innerHTML = '';
-            
-            document.getElementById('resultsTitle').innerText = `Wyniki wyszukiwania (${targetDay.label}, godz. ${timeStr})`;
-
-            let foundAny = false;
-
-            Object.keys(dbData.pools).forEach(name => {
-                const slots = dbData.pools[name][targetDay.name] || [];
-                const found = slots.find(s => timeStr >= s.time_start && timeStr < s.time_end);
-                
-                if (found && found.is_available) {
-                    foundAny = true;
-                    const item = document.createElement('div');
-                    item.className = 'result-card';
-                    item.innerHTML = `
-                        <div>
-                            <div class="result-pool">${name}</div>
-                            <div class="result-time">Przedział: ${found.time_start} - ${found.time_end}</div>
-                        </div>
-                        <div>
-                            <div class="result-count">${found.available_lanes_count}</div>
-                            <div class="result-label">wolne tory</div>
-                        </div>
-                    `;
-                    container.appendChild(item);
-                }
-            });
-
-            if (!foundAny) {
-                container.innerHTML = `<div style="text-align:center; font-size:13px; color:#64748b; padding:10px;">Brak wolnych torów w tym terminie.</div>`;
-            }
-
-            renderAllPoolsOverview(targetDay.name, targetDay.label);
-        }
-
-        function renderAllPoolsOverview(dayName, dayLabel) {
-            document.getElementById('allPoolsTitle').innerText = `Grafik zbiorczy (${dayLabel})`;
+        function renderDay(dayName) {
             const container = document.getElementById('poolsContainer');
             container.innerHTML = '';
 
-            Object.keys(dbData.pools).forEach(name => {
+            Object.keys(dbData).forEach(poolName => {
                 const card = document.createElement('div');
                 card.className = 'pool-card';
-                
+
                 let slotsHtml = '';
-                const slots = dbData.pools[name][dayName] || [];
-                slots.slice(2, 8).forEach(s => {
+                dbData[poolName].forEach(slot => {
+                    const isBusy = slot.free.includes("Brak");
+                    const statusClass = isBusy ? "status-busy" : "status-free";
+                    
+                    slotsHtml += `
+                        <div class="slot-row">
+                            <span class="slot-time">${slot.time}</span>
+                            <span class="slot-status ${statusClass}">${slot.free}</span>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="pool-flex">
+                        <span class="pool-name">${poolName}</span>
+                    </div>
+                    <div class="slots-list">
+                        ${slotsHtml}
+                    </div>
+                    <a href="${poolLinks[poolName]}" target="_blank" class="link-btn">Otwórz oficjalny grafik basenu ↗</a>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function changeDay(dayName, buttonElement) {
+            // Przełączanie klasy aktywnej na przyciskach dni
+            const buttons = document.querySelectorAll('.day-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+            
+            // Ponowne wyrenderowanie widoku
+            renderDay(dayName);
+        }
+
+        // Uruchomienie aplikacji na domyślnym dniu (Poniedziałek)
+        renderDay('poniedziałek');
+    </script>
+</body>
+</html>
