@@ -4,49 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wolne Tory Poznań</title>
-    <!-- Nowy link do stylów Tailwind CSS -->
-    <link href="https://jsdelivr.net" rel="stylesheet">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #eff6ff; color: #1e293b; margin: 0; padding: 20px; }
+        .container { max-width: 450px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: #1e3a8a; margin: 0; font-size: 28px; }
+        .header p { color: #2563eb; margin: 5px 0 0 0; font-size: 14px; font-weight: bold; }
+        .search-box { background: white; padding: 20px; rounded-radius: 16px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #dbeafe; margin-bottom: 20px; }
+        .search-box label { font-size: 11px; font-weight: bold; color: #1d4ed8; text-transform: uppercase; display: block; margin-bottom: 8px; }
+        .search-flex { display: flex; gap: 10px; }
+        .search-input { flex-grow: 1; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; }
+        .search-btn { background: #2563eb; color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .search-btn:hover { background: #1d4ed8; }
+        .result-card { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: linear-gradient(135deg, #2563eb, #0284c7); color: white; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.2); }
+        .result-pool { font-weight: bold; font-size: 15px; }
+        .result-time { font-size: 11px; opacity: 0.9; margin-top: 2px; }
+        .result-count { font-size: 24px; font-weight: 900; text-align: right; }
+        .result-label { font-size: 9px; text-transform: uppercase; opacity: 0.8; }
+        .pool-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #f1f5f9; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .pool-name { font-weight: bold; color: #334155; }
+        .badge { background: #dbeafe; color: #1d4ed8; padding: 4px 8px; border-radius: 9999px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .error-msg { padding: 15px; background: #fef2f2; color: #991b1b; border-radius: 12px; border: 1px solid #fee2e2; font-size: 13px; text-align: center; }
+        .hidden { display: none; }
+    </style>
 </head>
-<body class="bg-blue-50 min-h-screen font-sans text-gray-800">
+<body>
 
-    <div class="max-w-md mx-auto px-4 py-8">
-        <!-- Nagłówek -->
-        <header class="text-center mb-8">
-            <div class="inline-block p-4 bg-blue-600 text-white rounded-full shadow-lg mb-3">
-                <svg xmlns="http://w3.org" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                </svg>
-            </div>
-            <h1 class="text-2xl font-bold text-blue-950">Wolne Tory</h1>
-            <p class="text-sm text-blue-600 font-semibold">Poznań i okolice</p>
-        </header>
-
-        <!-- Wyszukiwarka -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-blue-100 mb-6">
-            <label class="block text-xs font-bold uppercase tracking-wider text-blue-700 mb-2">Szukaj wolnego toru</label>
-            <div class="flex gap-2">
-                <input type="text" id="searchInput" 
-                       placeholder="np. gdzie o 14:00 jest wolny tor" 
-                       value="gdzie o 14:00 jest wolny tor"
-                       class="w-full px-4 py-3 bg-blue-50 border border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-700 text-sm">
-                <button id="searchBtn" class="px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-sm">
-                    Szukaj
-                </button>
-            </div>
-            <p class="text-[11px] text-gray-400 mt-2">Wpisz zapytanie ze specyficzną godziną (np. 14:00, 08:30)</p>
+    <div class="container">
+        <div class="header">
+            <h1>Wolne Tory</h1>
+            <p>Poznań i okolice</p>
         </div>
 
-        <!-- Sekcja wyników wyszukiwania -->
-        <div id="resultsSection" class="hidden mb-6">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3" id="resultsTitle">Wyniki wyszukiwania</h3>
-            <div id="resultsContainer" class="space-y-3"></div>
+        <div class="search-box">
+            <label>Szukaj wolnego toru</label>
+            <div class="search-flex">
+                <input type="text" id="searchInput" placeholder="np. gdzie o 14:00" value="gdzie o 14:00 jest wolny tor">
+                <button id="searchBtn" class="search-btn">Szukaj</button>
+            </div>
         </div>
 
-        <!-- Przegląd wszystkich basenów -->
+        <div id="resultsSection" class="hidden" style="margin-bottom: 25px;">
+            <h3 style="font-size: 12px; color: #64748b; text-transform: uppercase; margin-bottom: 10px;" id="resultsTitle">Wyniki wyszukiwania</h3>
+            <div id="resultsContainer"></div>
+        </div>
+
         <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Wszystkie baseny</h3>
-            <div id="poolsContainer" class="space-y-4">
-                <div class="text-center py-6 text-sm text-gray-400">Ładowanie grafików basenowych...</div>
+            <h3 style="font-size: 12px; color: #64748b; text-transform: uppercase; margin-bottom: 10px;">Status basenów</h3>
+            <div id="poolsContainer">
+                <div style="text-align: center; color: #94a3b8; font-size: 14px; padding: 20px;">Ładowanie grafików...</div>
             </div>
         </div>
     </div>
@@ -54,110 +60,60 @@
     <script>
         let dbData = null;
         const daysMap = { 0: 'niedziela', 1: 'poniedziałek', 2: 'wtorek', 3: 'środa', 4: 'czwartek', 5: 'piątek', 6: 'sobota' };
-        
-        // Zabezpieczenie: dynamiczne pobieranie aktualnego dnia tygodnia w strefie czasowej użytkownika
         const currentDayName = daysMap[new Date().getDay()];
 
-        // Pobieranie bazy z relatywnym punktem odniesienia ./
         fetch('./schedule.json')
             .then(res => {
-                if (!res.ok) throw new Error("Błąd ładowania pliku");
+                if(!res.ok) throw new Error();
                 return res.json();
             })
             .then(data => {
                 dbData = data;
-                renderAllPools();
+                renderPools();
                 executeSearch();
             })
-            .catch(err => {
-                document.getElementById('poolsContainer').innerHTML = `
-                    <div class="p-4 bg-red-50 text-red-700 text-xs rounded-xl border border-red-100">
-                        Nie udało się załadować danych. Upewnij się, że plik schedule.json wygenerował się poprawnie w zakładce Actions.
-                    </div>
-                `;
+            .catch(() => {
+                document.getElementById('poolsContainer').innerHTML = `<div class="error-msg">Baza danych ładuje się na serwerze. Odśwież stronę za moment.</div>`;
             });
 
-        function renderAllPools() {
+        function renderPools() {
             if (!dbData || !dbData.pools) return;
             const container = document.getElementById('poolsContainer');
             container.innerHTML = '';
-
-            Object.keys(dbData.pools).forEach(poolName => {
-                const card = document.createElement('div');
-                card.className = "bg-white p-5 rounded-2xl shadow-sm border border-gray-100";
-                card.innerHTML = `
-                    <div class="flex justify-between items-center mb-1">
-                        <h4 class="font-bold text-gray-800 text-base">${poolName}</h4>
-                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-full uppercase">
-                            ${currentDayName}
-                        </span>
-                    </div>
-                    <div class="text-xs text-gray-400">Dane załadowane pomyślnie. Wykorzystaj wyszukiwarkę.</div>
-                `;
-                container.appendChild(card);
+            Object.keys(dbData.pools).forEach(name => {
+                const div = document.createElement('div');
+                div.className = 'pool-card';
+                div.innerHTML = `<span class="pool-name">${name}</span><span class="badge">${currentDayName}</span>`;
+                container.appendChild(div);
             });
         }
 
         function executeSearch() {
             const query = document.getElementById('searchInput').value;
             const timeMatch = query.match(/(\d{1,2}):(\d{2})/);
+            if (!timeMatch) return;
             
-            if (!timeMatch) {
-                alert("Proszę podać godzinę w formacie HH:MM (np. 14:00)");
-                return;
-            }
-
-            const targetTime = timeMatch[0].padStart(5, '0');
-            const resultsContainer = document.getElementById('resultsContainer');
-            const resultsSection = document.getElementById('resultsSection');
-            const resultsTitle = document.getElementById('resultsTitle');
-
-            resultsContainer.innerHTML = '';
-            resultsTitle.innerText = `Wyniki wyszukiwania dla godziny ${targetTime} (${currentDayName})`;
-            resultsSection.classList.remove('hidden');
-
-            let foundAny = false;
+            const targetTime = timeMatch[0];
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = '';
+            document.getElementById('resultsTitle').innerText = `Wyniki wyszukiwania o godz. ${targetTime} (${currentDayName})`;
+            document.getElementById('resultsSection').classList.remove('hidden');
 
             if (dbData && dbData.pools) {
-                Object.keys(dbData.pools).forEach(poolName => {
-                    const poolDayData = dbData.pools[poolName][currentDayName] || [];
-                    
-                    const matchingSlot = poolDayData.find(slot => {
-                        return targetTime >= slot.time_start && targetTime <= slot.time_end;
-                    });
-
-                    if (matchingSlot && matchingSlot.is_available) {
-                        foundAny = true;
+                Object.keys(dbData.pools).forEach(name => {
+                    const slots = dbData.pools[name][currentDayName] || [];
+                    const found = slots.find(s => targetTime >= s.time_start && targetTime <= s.time_end);
+                    if (found && found.is_available) {
                         const item = document.createElement('div');
-                        item.className = "flex items-center justify-between p-4 bg-blue-600 text-white rounded-xl shadow-sm shadow-blue-200";
-                        item.innerHTML = `
-                            <div>
-                                <div class="font-bold text-sm">${poolName}</div>
-                                <div class="text-[11px] opacity-80">Godziny: ${matchingSlot.time_start} - ${matchingSlot.time_end}</div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-lg font-black">${matchingSlot.available_lanes_count}</div>
-                                <div class="text-[9px] uppercase tracking-wider font-semibold opacity-75">wolne tory</div>
-                            </div>
-                        `;
-                        resultsContainer.appendChild(item);
+                        item.className = 'result-card';
+                        item.innerHTML = `<div><div class="result-pool">${name}</div><div class="result-time">Slot: ${found.time_start}-${found.time_end}</div></div><div><div class="result-count">${found.available_lanes_count}</div><div class="result-label">wolne tory</div></div>`;
+                        container.appendChild(item);
                     }
                 });
-            }
-
-            if (!foundAny) {
-                resultsContainer.innerHTML = `
-                    <div class="p-4 bg-gray-100 text-gray-600 text-xs rounded-xl text-center">
-                        Brak wolnych torów na basenach o godzinie ${targetTime}.
-                    </div>
-                `;
             }
         }
 
         document.getElementById('searchBtn').addEventListener('click', executeSearch);
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') executeSearch();
-        });
     </script>
 </body>
 </html>
