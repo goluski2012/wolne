@@ -1,0 +1,30 @@
+name: Uruchom Parser Basenowy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-parser:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Pobierz kod z repozytorium
+      uses: actions/checkout@v4
+
+    - name: Skonfiguruj Pythona
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Zainstaluj biblioteki
+      run: pip install pdfplumber
+
+    - name: Uruchom skrypt parsera
+      run: python parse_schedules.py
+
+    - name: Zapisz wygenerowany plik JSON w repozytorium
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "Automatyczna aktualizacja bazy schedule.json"
+        file_pattern: "schedule.json"
