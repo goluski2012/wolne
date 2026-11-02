@@ -11,7 +11,7 @@
         .header h1 { color: #1e3a8a; margin: 0; font-size: 26px; font-weight: 800; }
         .header p { color: #2563eb; margin: 5px 0 0 0; font-size: 13px; font-weight: bold; }
         
-        .days-container { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: none; }
+        .days-container { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: none; justify-content: center; }
         .days-container::-webkit-scrollbar { display: none; }
         .day-btn { background: white; color: #2563eb; border: 1px solid #bfdbfe; padding: 8px 14px; font-size: 12px; font-weight: 700; border-radius: 9999px; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
         .day-btn.active { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.2); }
@@ -41,7 +41,7 @@
         </div>
 
         <div class="days-container" id="daysMenu">
-            <button id="btn-poniedziałek" class="day-btn active" onclick="changeDay('poniedziałek')">Pon</button>
+            <button id="btn-poniedziałek" class="day-btn" onclick="changeDay('poniedziałek')">Pon</button>
             <button id="btn-wtorek" class="day-btn" onclick="changeDay('wtorek')">Wt</button>
             <button id="btn-środa" class="day-btn" onclick="changeDay('środa')">Śr</button>
             <button id="btn-czwartek" class="day-btn" onclick="changeDay('czwartek')">Czw</button>
@@ -60,7 +60,6 @@
             "Tarnowskie Termy": "https://tarnowskie-termy.pl"
         };
 
-        // Realne, zróżnicowane dane na bazie Twoich dokumentów tekstowych w podziale na dni
         const fullWeeklyDatabase = {
             "poniedziałek": {
                 "Chwiałka": [
@@ -185,3 +184,6 @@
 
             const dayData = fullWeeklyDatabase[dayName];
 
+            Object.keys(dayData).forEach(poolName => {
+
+                                         
