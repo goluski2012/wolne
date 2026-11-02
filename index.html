@@ -13,7 +13,7 @@
         .search-box { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #dbeafe; margin-bottom: 20px; }
         .search-box label { font-size: 11px; font-weight: bold; color: #1d4ed8; text-transform: uppercase; display: block; margin-bottom: 8px; }
         .search-flex { display: flex; gap: 10px; }
-        .search-input { flex-grow: 1; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; }
+        .search-input { flex-grow: 1; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; width: 100%; }
         .search-btn { background: #2563eb; color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .search-btn:hover { background: #1d4ed8; }
         .result-card { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: linear-gradient(135deg, #2563eb, #0284c7); color: white; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.2); }
@@ -21,12 +21,14 @@
         .result-time { font-size: 11px; opacity: 0.9; margin-top: 2px; }
         .result-count { font-size: 24px; font-weight: 900; text-align: right; }
         .result-label { font-size: 9px; text-transform: uppercase; opacity: 0.8; }
-        .pool-card { background: white; padding: 15px 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 10px; }
-        .pool-flex { display: flex; justify-content: space-between; align-items: center; }
-        .pool-name { font-weight: bold; color: #1e293b; }
+        .pool-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .pool-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .pool-name { font-weight: bold; color: #1e3a8a; font-size: 17px; }
         .badge { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 9999px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .slots-list { margin-top: 10px; border-top: 1px dashed #e2e8f0; padding-top: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-        .slot-pill { font-size: 11px; padding: 4px 6px; background: #f0f9ff; border: 1px solid #e0f2fe; text-align: center; border-radius: 6px; color: #0369a1; font-weight: 500; }
+        .slots-list { border-top: 1px dashed #e2e8f0; border-bottom: 1px dashed #e2e8f0; padding: 10px 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 12px; }
+        .slot-pill { font-size: 11px; padding: 5px 6px; background: #f0f9ff; border: 1px solid #e0f2fe; text-align: center; border-radius: 6px; color: #0369a1; font-weight: 500; }
+        .link-btn { display: block; text-align: center; background-color: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+        .link-btn:hover { background-color: #2563eb; color: white; border-color: #2563eb; }
     </style>
 </head>
 <body>
@@ -43,7 +45,7 @@
                 <input type="text" id="searchInput" class="search-input" placeholder="np. gdzie jutro o 15:00" value="gdzie jutro o 15:00">
                 <button id="searchBtn" class="search-btn">Szukaj</button>
             </div>
-            <p style="font-size: 11px; color: #94a3b8; margin: 8px 0 0 0;">Możesz wpisać: <i>jutro, dzisiaj, poniedziałek, wtorek, środa, czwartek, piątek, sobota, niedziela</i> oraz godzinę.</p>
+            <p style="font-size: 11px; color: #94a3b8; margin: 8px 0 0 0;">Wpisz: <i>jutro, dzisiaj, poniedziałek, wtorek, środa, czwartek, piątek, sobota, niedziela</i> oraz godzinę.</p>
         </div>
 
         <div id="resultsSection" style="margin-bottom: 25px;">
@@ -64,9 +66,14 @@
             "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"
         ];
 
+        const poolConfigs = {
+            "Chwiałka": { link: "https://posir.poznan.pl" },
+            "CityZen": { link: "https://efitness.com.pl" },
+            "Tarnowskie Termy": { link: "https://tarnowskie-termy.pl" }
+        };
+
         const dbData = { pools: { "Chwiałka": {}, "CityZen": {}, "Tarnowskie Termy": {} } };
 
-        // Generowanie zróżnicowanych danych testowych na cały tydzień dla 3 basenów
         days.forEach(d => {
             Object.keys(dbData.pools).forEach(pool => {
                 dbData.pools[pool][d] = hours.map((h, i) => {
@@ -168,23 +175,4 @@
                 
                 let slotsHtml = '';
                 const slots = dbData.pools[name][dayName] || [];
-                slots.slice(2, 10).forEach(s => {
-                    slotsHtml += `<span class="slot-pill">${s.time_start} (${s.available_lanes_count} wolne)</span>`;
-                });
-
-                card.innerHTML = `
-                    <div class="pool-flex">
-                        <span class="pool-name">${name}</span>
-                        <span class="badge">${dayName}</span>
-                    </div>
-                    <div class="slots-list">${slotsHtml}</div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        document.getElementById('searchBtn').addEventListener('click', executeSearch);
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') executeSearch();
-        });
-
+                slots.slice(2, 8).forEach(s => {
